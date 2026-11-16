@@ -1,0 +1,845 @@
+[
+  {
+    "case": {
+      "case_id": "CASE-001",
+      "times_are": "UTC",
+      "rule_id": "100010",
+      "rule_description": "Custom SSH Brute Force: 6 failed password attempts from the same source IP within 120 seconds.",
+      "rule_note": "Frequency rule: ONE alert already means 6 failed SSH logins from the same source IP within 120 s. rule_alerts_in_case counts Wazuh alerts, not log lines, and sample_logs shows only a few of the underlying events.",
+      "wazuh_level": 10,
+      "mitre": [
+        "T1110"
+      ],
+      "agent": "ubuntu-victim",
+      "target_context": "Linux server, agent 001",
+      "src_ip": "192.168.56.103",
+      "src_ip_context": "internal host, not on the admin allow-list (admin host is 192.168.56.1)",
+      "rule_alerts_in_case": 8,
+      "first_seen": "2026-11-14T12:32:36.134Z",
+      "last_seen": "2026-11-14T12:35:58.200Z",
+      "details": {
+        "data.dstuser": [
+          "victim"
+        ]
+      },
+      "sample_logs": [
+        "Nov 14 12:32:36 ubuntu-victim sshd-session[2452]: Failed password for victim from 192.168.56.103 port 52028 ssh2",
+        "Nov 14 12:33:04 ubuntu-victim sshd-session[2460]: Failed password for victim from 192.168.56.103 port 42970 ssh2",
+        "Nov 14 12:33:33 ubuntu-victim sshd-session[2468]: Failed password for victim from 192.168.56.103 port 39054 ssh2"
+      ]
+    },
+    "suggestion": {
+      "verdict": "true_positive",
+      "severity": "high",
+      "confidence": 0.95,
+      "summary": "Multiple failed SSH password attempts from an internal IP targeting a specific user within the defined time window indicate a brute force attack.",
+      "evidence": [
+        "Nov 14 12:32:36 ubuntu-victim sshd-session[2452]: Failed password for victim from 192.168.56.103 port 52028 ssh2",
+        "Nov 14 12:33:04 ubuntu-victim sshd-session[2460]: Failed password for victim from 192.168.56.103 port 42970 ssh2",
+        "rule_description: Custom SSH Brute Force: 6 failed password attempts from the same source IP within 120 seconds.",
+        "src_ip_context: internal host, not on the admin allow-list (admin host is 192.168.56.1)"
+      ],
+      "recommended_actions": [
+        "Isolate or block source IP 192.168.56.103 at the firewall level.",
+        "Investigate user 'victim' on agent ubuntu-victim for unauthorized access attempts.",
+        "Review other internal hosts for similar brute force patterns."
+      ],
+      "attempts": 1,
+      "schema_errors": [],
+      "model_verdict": "true_positive",
+      "model_severity": "high",
+      "guardrail_notes": [],
+      "checks": [],
+      "run_verdicts": [
+        "true_positive",
+        "true_positive",
+        "true_positive"
+      ]
+    },
+    "analyst": {
+      "decision": "pending_review",
+      "final_verdict": null,
+      "note": ""
+    },
+    "llm_seconds": 193.0
+  },
+  {
+    "case": {
+      "case_id": "CASE-002",
+      "times_are": "UTC",
+      "rule_id": "100011",
+      "rule_description": "Suspicious Login: Successful SSH authentication outside business hours (20:00-08:00).",
+      "rule_note": "Time-window rule: fires on a successful SSH login inside the rule's configured time window. The rule fired, so the manager matched its window. Do not use the clock time to dismiss the alert; judge the login itself (who, from where).",
+      "wazuh_level": 7,
+      "mitre": [
+        "T1078"
+      ],
+      "agent": "ubuntu-victim",
+      "target_context": "Linux server, agent 001",
+      "src_ip": "192.168.56.103",
+      "src_ip_context": "internal host, not on the admin allow-list (admin host is 192.168.56.1)",
+      "rule_alerts_in_case": 2,
+      "first_seen": "2026-11-14T13:01:12.545Z",
+      "last_seen": "2026-11-14T13:01:52.557Z",
+      "details": {
+        "data.dstuser": [
+          "victim"
+        ]
+      },
+      "sample_logs": [
+        "Nov 14 13:01:11 ubuntu-victim sshd-session[2690]: Accepted password for victim from 192.168.56.103 port 59034 ssh2",
+        "Nov 14 13:01:50 ubuntu-victim sshd-session[2824]: Accepted password for victim from 192.168.56.103 port 39364 ssh2"
+      ],
+      "time_check": {
+        "first_seen_hour_utc": 13,
+        "rule_window_utc": "20:00-08:00",
+        "inside_window": false
+      }
+    },
+    "suggestion": {
+      "verdict": "true_positive",
+      "severity": "medium",
+      "confidence": 0.9,
+      "summary": "An internal host successfully logged into a Linux server via SSH outside business hours, matching the rule's detection criteria.",
+      "evidence": [
+        "Nov 14 13:01:11 ubuntu-victim sshd-session[2690]: Accepted password for victim from 192.168.56.103 port 59034 ssh2",
+        "src_ip: 192.168.56.103",
+        "src_ip_context: internal host, not on the admin allow-list (admin host is 192.168.56.1)",
+        "rule_description: Suspicious Login: Successful SSH authentication outside business hours (20:00-08:00)."
+      ],
+      "recommended_actions": [
+        "Verify if the user 'victim' authorized this login from 192.168.56.103.",
+        "If unauthorized, isolate host 192.168.56.103 and investigate for compromise.",
+        "Review other activity logs from 192.168.56.103 to determine intent."
+      ],
+      "attempts": 1,
+      "schema_errors": [],
+      "model_verdict": "true_positive",
+      "model_severity": "medium",
+      "guardrail_notes": [],
+      "checks": [
+        "alert hour 13:00 UTC is outside the rule window 20:00-08:00: verify the rule time zone and window"
+      ],
+      "run_verdicts": [
+        "true_positive",
+        "true_positive",
+        "true_positive"
+      ]
+    },
+    "analyst": {
+      "decision": "pending_review",
+      "final_verdict": null,
+      "note": ""
+    },
+    "llm_seconds": 166.9
+  },
+  {
+    "case": {
+      "case_id": "CASE-003",
+      "times_are": "UTC",
+      "rule_id": "100012",
+      "rule_description": "Possible Lateral Movement: same source IP successfully authenticated to 2 different hosts within 5 minutes.",
+      "rule_note": "Correlation rule: the same source IP logged in to 2 different hosts within 5 minutes. The alert is raised when the second login arrives; the first host may appear in related_alerts or not at all.",
+      "wazuh_level": 12,
+      "mitre": [
+        "T1021"
+      ],
+      "agent": "ubuntu-victim2",
+      "target_context": "Linux server, agent 002",
+      "src_ip": "192.168.56.103",
+      "src_ip_context": "internal host, not on the admin allow-list (admin host is 192.168.56.1)",
+      "rule_alerts_in_case": 2,
+      "first_seen": "2026-11-14T14:46:55.585Z",
+      "last_seen": "2026-11-14T14:52:57.709Z",
+      "details": {
+        "data.dstuser": [
+          "victim2"
+        ]
+      },
+      "sample_logs": [
+        "Nov 14 14:46:53 ubuntu-victim2 sshd-session[5023]: Accepted password for victim2 from 192.168.56.103 port 49402 ssh2",
+        "Nov 14 14:52:56 ubuntu-victim2 sshd-session[5134]: Accepted password for victim2 from 192.168.56.103 port 40026 ssh2"
+      ]
+    },
+    "suggestion": {
+      "verdict": "true_positive",
+      "severity": "critical",
+      "confidence": 0.95,
+      "summary": "An internal host (192.168.56.103) successfully authenticated to the same user on two different hosts within a 7-minute window, indicating potential lateral movement.",
+      "evidence": [
+        "Nov 14 14:46:53 ubuntu-victim2 sshd-session[5023]: Accepted password for victim2 from 192.168.56.103 port 49402 ssh2",
+        "Nov 14 14:52:56 ubuntu-victim2 sshd-session[5134]: Accepted password for victim2 from 192.168.56.103 port 40026 ssh2"
+      ],
+      "recommended_actions": [
+        "Isolate host 192.168.56.103 to prevent further lateral movement.",
+        "Force password reset for user 'victim2' on both affected hosts.",
+        "Review authentication logs on the source IP for additional command execution or privilege escalation."
+      ],
+      "attempts": 1,
+      "schema_errors": [],
+      "model_verdict": "true_positive",
+      "model_severity": "high",
+      "guardrail_notes": [
+        "severity raised from high to critical (floor for Wazuh level 12)"
+      ],
+      "checks": [],
+      "run_verdicts": [
+        "true_positive",
+        "true_positive",
+        "true_positive"
+      ]
+    },
+    "analyst": {
+      "decision": "pending_review",
+      "final_verdict": null,
+      "note": ""
+    },
+    "llm_seconds": 152.2
+  },
+  {
+    "case": {
+      "case_id": "CASE-004",
+      "times_are": "UTC",
+      "rule_id": "100013",
+      "rule_description": "Possible Persistence: new user account created on endpoint.",
+      "rule_note": "Fires when useradd creates a new local account. The log does not say who ran it or why.",
+      "wazuh_level": 10,
+      "mitre": [
+        "T1136.001"
+      ],
+      "agent": "ubuntu-victim",
+      "target_context": "Linux server, agent 001",
+      "src_ip": "-",
+      "src_ip_context": "not applicable (local event, no network source in this alert)",
+      "rule_alerts_in_case": 1,
+      "first_seen": "2026-11-14T15:01:18.512Z",
+      "last_seen": "2026-11-14T15:01:18.512Z",
+      "details": {
+        "data.dstuser": [
+          "backdoor1"
+        ]
+      },
+      "sample_logs": [
+        "Nov 14 15:01:18 ubuntu-victim useradd[3999]: new user: name=backdoor1, UID=1002, GID=1002, home=/home/backdoor1, shell=/bin/bash, from=/dev/pts/1"
+      ],
+      "related_alerts": [
+        {
+          "rule_id": "100015",
+          "description": "Possible Privilege Escalation: root shell opened via sudo.",
+          "agent": "ubuntu-victim",
+          "src_ip": "-",
+          "offset_seconds": 558
+        }
+      ]
+    },
+    "suggestion": {
+      "verdict": "true_positive",
+      "severity": "high",
+      "confidence": 0.95,
+      "summary": "A new user account named 'backdoor1' was created with root-level privileges (UID/GID 1002) and a bash shell on the victim host.",
+      "evidence": [
+        "useradd[3999]: new user: name=backdoor1, UID=1002, GID=1002",
+        "shell=/bin/bash",
+        "data.dstuser: ['backdoor1']"
+      ],
+      "recommended_actions": [
+        "Investigate the command execution history for user 'root' or any service account prior to 15:01:18 UTC.",
+        "Disable or delete the user account 'backdoor1' immediately.",
+        "Review logs for the related privilege escalation alert (rule 100015) to determine if root access was gained."
+      ],
+      "attempts": 1,
+      "schema_errors": [],
+      "model_verdict": "true_positive",
+      "model_severity": "high",
+      "guardrail_notes": [],
+      "checks": [],
+      "run_verdicts": [
+        "true_positive",
+        "true_positive",
+        "true_positive"
+      ]
+    },
+    "analyst": {
+      "decision": "pending_review",
+      "final_verdict": null,
+      "note": ""
+    },
+    "llm_seconds": 116.5
+  },
+  {
+    "case": {
+      "case_id": "CASE-005",
+      "times_are": "UTC",
+      "rule_id": "100014",
+      "rule_description": "Possible Data Exfiltration: file transfer tool executed with sudo.",
+      "rule_note": "Matches the NAME of a transfer tool (scp, curl, nc, rsync...) in a sudo command, not whether data is really sent. Judge from the full command in details.data.command.",
+      "wazuh_level": 10,
+      "mitre": [
+        "T1048"
+      ],
+      "agent": "ubuntu-victim2",
+      "target_context": "Linux server, agent 002",
+      "src_ip": "-",
+      "src_ip_context": "not applicable (local event, no network source in this alert)",
+      "rule_alerts_in_case": 2,
+      "first_seen": "2026-11-14T15:05:55.976Z",
+      "last_seen": "2026-11-14T15:06:33.995Z",
+      "details": {
+        "data.srcuser": [
+          "victim2"
+        ],
+        "data.dstuser": [
+          "root"
+        ],
+        "data.command": [
+          "/usr/bin/curl --version",
+          "/usr/bin/scp /etc/hostname victim@192.168.56.111:/tmp/"
+        ]
+      },
+      "sample_logs": [
+        "Nov 14 15:05:54 ubuntu-victim2 sudo[5265]: victim2 : TTY=/dev/pts/0 ; PWD=/home/victim2 ; USER=root ; COMMAND=/usr/bin/scp /etc/hostname victim@192.168.56.111:/tmp/",
+        "Nov 14 15:06:32 ubuntu-victim2 sudo[5281]: victim2 : TTY=/dev/pts/0 ; PWD=/home/victim2 ; USER=root ; COMMAND=/usr/bin/curl --version"
+      ]
+    },
+    "suggestion": {
+      "verdict": "true_positive",
+      "severity": "high",
+      "confidence": 0.95,
+      "summary": "The user 'victim2' executed a sudo command to transfer sensitive system files via SCP to an external IP address, indicating active data exfiltration.",
+      "evidence": [
+        "/usr/bin/scp /etc/hostname victim@192.168.56.111:/tmp/",
+        "victim2 : TTY=/dev/pts/0 ; PWD=/home/victim2 ; USER=root ; COMMAND=/usr/bin/scp /etc/hostname victim@192.168.56.111:/tmp/"
+      ],
+      "recommended_actions": [
+        "Isolate host ubuntu-victim2 from the network immediately.",
+        "Block outbound traffic to IP 192.168.56.111 at the firewall.",
+        "Reset credentials for user 'victim2' and audit all files accessed by this user."
+      ],
+      "attempts": 1,
+      "schema_errors": [],
+      "model_verdict": "true_positive",
+      "model_severity": "high",
+      "guardrail_notes": [],
+      "checks": [
+        "text says external/public but every IP in the case is private (RFC1918)",
+        "action targets 192.168.56.111, which is not the source IP of this case"
+      ],
+      "run_verdicts": [
+        "true_positive",
+        "true_positive",
+        "true_positive"
+      ]
+    },
+    "analyst": {
+      "decision": "pending_review",
+      "final_verdict": null,
+      "note": ""
+    },
+    "llm_seconds": 136.1
+  },
+  {
+    "case": {
+      "case_id": "CASE-006",
+      "times_are": "UTC",
+      "rule_id": "100015",
+      "rule_description": "Possible Privilege Escalation: root shell opened via sudo.",
+      "rule_note": "Fires when sudo opens a root shell (for example sudo su).",
+      "wazuh_level": 10,
+      "mitre": [
+        "T1548.003"
+      ],
+      "agent": "ubuntu-victim",
+      "target_context": "Linux server, agent 001",
+      "src_ip": "-",
+      "src_ip_context": "not applicable (local event, no network source in this alert)",
+      "rule_alerts_in_case": 1,
+      "first_seen": "2026-11-14T15:10:36.707Z",
+      "last_seen": "2026-11-14T15:10:36.707Z",
+      "details": {
+        "data.srcuser": [
+          "victim"
+        ],
+        "data.dstuser": [
+          "root"
+        ],
+        "data.command": [
+          "/usr/bin/su -"
+        ]
+      },
+      "sample_logs": [
+        "Nov 14 15:10:35 ubuntu-victim sudo[4130]: victim : TTY=/dev/pts/0 ; PWD=/home/victim ; USER=root ; COMMAND=/usr/bin/su -"
+      ],
+      "related_alerts": [
+        {
+          "rule_id": "100013",
+          "description": "Possible Persistence: new user account created on endpoint.",
+          "agent": "ubuntu-victim",
+          "src_ip": "-",
+          "offset_seconds": -558
+        }
+      ]
+    },
+    "suggestion": {
+      "verdict": "true_positive",
+      "severity": "high",
+      "confidence": 0.95,
+      "summary": "A user 'victim' successfully escalated privileges to root via sudo su on the local host, indicating a confirmed privilege escalation event.",
+      "evidence": [
+        "\"data.dstuser\": [\"root\"]",
+        "\"data.command\": [\"/usr/bin/su -\"]",
+        "\"Nov 14 15:10:35 ubuntu-victim sudo[4130]: victim : TTY=/dev/pts/0 ; PWD=/home/victim ; USER=root ; COMMAND=/usr/bin/su -\""
+      ],
+      "recommended_actions": [
+        "Isolate the host 'ubuntu-victim' to prevent lateral movement.",
+        "Review user 'victim' account history for unauthorized access or persistence mechanisms.",
+        "Verify if the related alert about a new user account (CASE-006 has a related alert from -558 seconds) is part of this compromise."
+      ],
+      "attempts": 1,
+      "schema_errors": [],
+      "model_verdict": "true_positive",
+      "model_severity": "high",
+      "guardrail_notes": [],
+      "checks": [],
+      "run_verdicts": [
+        "true_positive",
+        "true_positive",
+        "true_positive"
+      ]
+    },
+    "analyst": {
+      "decision": "pending_review",
+      "final_verdict": null,
+      "note": ""
+    },
+    "llm_seconds": 131.3
+  },
+  {
+    "case": {
+      "case_id": "CASE-007",
+      "times_are": "UTC",
+      "rule_id": "100016",
+      "rule_description": "Critical file modified: /etc/passwd changed on endpoint.",
+      "rule_note": "File integrity rule on /etc/passwd and /etc/shadow. Who-data is NOT enabled, so the user or process behind the change is unknown. fim_changes summarizes each change.",
+      "wazuh_level": 12,
+      "mitre": [
+        "T1098"
+      ],
+      "agent": "ubuntu-victim",
+      "target_context": "Linux server, agent 001",
+      "src_ip": "-",
+      "src_ip_context": "not applicable (local event, no network source in this alert)",
+      "rule_alerts_in_case": 6,
+      "first_seen": "2026-11-14T15:22:08.510Z",
+      "last_seen": "2026-11-14T15:23:56.227Z",
+      "details": {
+        "syscheck.path": [
+          "/etc/passwd",
+          "/etc/shadow"
+        ]
+      },
+      "fim_changes": [
+        {
+          "time": "2026-11-14T15:22:08.510Z",
+          "path": "/etc/passwd",
+          "event": "modified",
+          "size_before": 1838,
+          "size_after": 1883,
+          "size_direction": "increased",
+          "changed_attributes": "size,inode,mtime,md5,sha1,sha256"
+        },
+        {
+          "time": "2026-11-14T15:22:08.536Z",
+          "path": "/etc/shadow",
+          "event": "modified",
+          "size_before": 1067,
+          "size_after": 1096,
+          "size_direction": "increased",
+          "changed_attributes": "size,inode,mtime,md5,sha1,sha256"
+        },
+        {
+          "time": "2026-11-14T15:22:22.182Z",
+          "path": "/etc/shadow",
+          "event": "modified",
+          "size_before": 1096,
+          "size_after": 1168,
+          "size_direction": "increased",
+          "changed_attributes": "size,inode,mtime,md5,sha1,sha256"
+        },
+        {
+          "time": "2026-11-14T15:22:33.536Z",
+          "path": "/etc/passwd",
+          "event": "modified",
+          "size_before": 1883,
+          "size_after": 1886,
+          "size_direction": "increased",
+          "changed_attributes": "size,inode,mtime,md5,sha1,sha256"
+        },
+        {
+          "time": "2026-11-14T15:23:56.213Z",
+          "path": "/etc/passwd",
+          "event": "modified",
+          "size_before": 1886,
+          "size_after": 1838,
+          "size_direction": "decreased",
+          "changed_attributes": "size,inode,mtime,md5,sha1,sha256"
+        },
+        {
+          "time": "2026-11-14T15:23:56.227Z",
+          "path": "/etc/shadow",
+          "event": "modified",
+          "size_before": 1168,
+          "size_after": 1067,
+          "size_direction": "decreased",
+          "changed_attributes": "size,inode,mtime,md5,sha1,sha256"
+        }
+      ],
+      "related_alerts": [
+        {
+          "rule_id": "100013",
+          "description": "Possible Persistence: new user account created on endpoint.",
+          "agent": "ubuntu-victim",
+          "src_ip": "-",
+          "offset_seconds": 1
+        }
+      ]
+    },
+    "suggestion": {
+      "verdict": "true_positive",
+      "severity": "critical",
+      "confidence": 0.95,
+      "summary": "Critical file integrity violations detected on /etc/passwd and /etc/shadow with multiple modifications occurring within a short timeframe, indicating active compromise.",
+      "evidence": [
+        "/etc/passwd changed on endpoint",
+        "/etc/shadow modified",
+        "size_before: 1067, size_after: 1096",
+        "size_before: 1838, size_after: 1883",
+        "Possible Persistence: new user account created on endpoint"
+      ],
+      "recommended_actions": [
+        "Investigate the agent 'ubuntu-victim' for unauthorized user creation and privilege escalation.",
+        "Review file contents of /etc/passwd and /etc/shadow to identify malicious entries or backdoors.",
+        "Isolate the host 'ubuntu-victim' from the network to prevent lateral movement."
+      ],
+      "attempts": 1,
+      "schema_errors": [],
+      "model_verdict": "true_positive",
+      "model_severity": "critical",
+      "guardrail_notes": [],
+      "checks": [],
+      "run_verdicts": [
+        "true_positive",
+        "true_positive",
+        "true_positive"
+      ]
+    },
+    "analyst": {
+      "decision": "pending_review",
+      "final_verdict": null,
+      "note": ""
+    },
+    "llm_seconds": 142.3
+  },
+  {
+    "case": {
+      "case_id": "CASE-008",
+      "times_are": "UTC",
+      "rule_id": "100013",
+      "rule_description": "Possible Persistence: new user account created on endpoint.",
+      "rule_note": "Fires when useradd creates a new local account. The log does not say who ran it or why.",
+      "wazuh_level": 10,
+      "mitre": [
+        "T1136.001"
+      ],
+      "agent": "ubuntu-victim",
+      "target_context": "Linux server, agent 001",
+      "src_ip": "-",
+      "src_ip_context": "not applicable (local event, no network source in this alert)",
+      "rule_alerts_in_case": 1,
+      "first_seen": "2026-11-14T15:22:09.608Z",
+      "last_seen": "2026-11-14T15:22:09.608Z",
+      "details": {
+        "data.dstuser": [
+          "fimtest"
+        ]
+      },
+      "sample_logs": [
+        "Nov 14 15:22:08 ubuntu-victim useradd[4842]: new user: name=fimtest, UID=1002, GID=1002, home=/home/fimtest, shell=/bin/bash, from=/dev/pts/1"
+      ],
+      "related_alerts": [
+        {
+          "rule_id": "100016",
+          "description": "Critical file modified: /etc/passwd changed on endpoint.",
+          "agent": "ubuntu-victim",
+          "src_ip": "-",
+          "offset_seconds": -1
+        }
+      ]
+    },
+    "suggestion": {
+      "verdict": "true_positive",
+      "severity": "high",
+      "confidence": 0.95,
+      "summary": "A new user account 'fimtest' was created on the endpoint with a shell set to /bin/bash, and this coincided with a critical modification of /etc/passwd.",
+      "evidence": [
+        "\"useradd[4842]: new user: name=fimtest, UID=1002, GID=1002, home=/home/fimtest, shell=/bin/bash\"",
+        "\"Critical file modified: /etc/passwd changed on endpoint\""
+      ],
+      "recommended_actions": [
+        "Isolate the host 'ubuntu-victim' from the network to prevent lateral movement.",
+        "Disable or delete the user account 'fimtest' immediately.",
+        "Investigate the process running useradd and check for persistence mechanisms."
+      ],
+      "attempts": 1,
+      "schema_errors": [],
+      "model_verdict": "true_positive",
+      "model_severity": "high",
+      "guardrail_notes": [],
+      "checks": [],
+      "run_verdicts": [
+        "true_positive",
+        "true_positive",
+        "true_positive"
+      ]
+    },
+    "analyst": {
+      "decision": "pending_review",
+      "final_verdict": null,
+      "note": ""
+    },
+    "llm_seconds": 110.0
+  },
+  {
+    "case": {
+      "case_id": "CASE-009",
+      "times_are": "UTC",
+      "rule_id": "100010",
+      "rule_description": "Custom SSH Brute Force: 6 failed password attempts from the same source IP within 120 seconds.",
+      "rule_note": "Frequency rule: ONE alert already means 6 failed SSH logins from the same source IP within 120 s. rule_alerts_in_case counts Wazuh alerts, not log lines, and sample_logs shows only a few of the underlying events.",
+      "wazuh_level": 10,
+      "mitre": [
+        "T1110"
+      ],
+      "agent": "ubuntu-victim",
+      "target_context": "Linux server, agent 001",
+      "src_ip": "192.168.56.103",
+      "src_ip_context": "internal host, not on the admin allow-list (admin host is 192.168.56.1)",
+      "rule_alerts_in_case": 1,
+      "first_seen": "2026-11-14T15:35:41.824Z",
+      "last_seen": "2026-11-14T15:35:41.824Z",
+      "details": {
+        "data.dstuser": [
+          "victim"
+        ]
+      },
+      "sample_logs": [
+        "Nov 14 15:35:41 ubuntu-victim sshd-session[4982]: Failed password for victim from 192.168.56.103 port 37008 ssh2"
+      ]
+    },
+    "suggestion": {
+      "verdict": "true_positive",
+      "severity": "high",
+      "confidence": 0.9,
+      "summary": "An internal host (192.168.56.103) attempted to brute-force SSH access against a Linux server, matching the rule criteria for failed password attempts.",
+      "evidence": [
+        "Failed password for victim from 192.168.56.103 port 37008 ssh2",
+        "src_ip: 192.168.56.103",
+        "rule_description: Custom SSH Brute Force: 6 failed password attempts from the same source IP within 120 seconds."
+      ],
+      "recommended_actions": [
+        "Isolate host 192.168.56.103 to prevent further unauthorized access attempts.",
+        "Review user 'victim' account status on the target server for potential compromise.",
+        "Block IP 192.168.56.103 at the firewall if isolation is not immediately possible."
+      ],
+      "attempts": 1,
+      "schema_errors": [],
+      "model_verdict": "true_positive",
+      "model_severity": "medium",
+      "guardrail_notes": [
+        "severity raised from medium to high (floor for Wazuh level 10)"
+      ],
+      "checks": [],
+      "run_verdicts": [
+        "true_positive",
+        "true_positive",
+        "true_positive"
+      ]
+    },
+    "analyst": {
+      "decision": "pending_review",
+      "final_verdict": null,
+      "note": ""
+    },
+    "llm_seconds": 137.7
+  },
+  {
+    "case": {
+      "case_id": "CASE-010",
+      "times_are": "UTC",
+      "rule_id": "100016",
+      "rule_description": "Critical file modified: /etc/passwd changed on endpoint.",
+      "rule_note": "File integrity rule on /etc/passwd and /etc/shadow. Who-data is NOT enabled, so the user or process behind the change is unknown. fim_changes summarizes each change.",
+      "wazuh_level": 12,
+      "mitre": [
+        "T1098"
+      ],
+      "agent": "ubuntu-victim",
+      "target_context": "Linux server, agent 001",
+      "src_ip": "-",
+      "src_ip_context": "not applicable (local event, no network source in this alert)",
+      "rule_alerts_in_case": 2,
+      "first_seen": "2026-11-14T16:17:16.721Z",
+      "last_seen": "2026-11-14T16:17:31.967Z",
+      "details": {
+        "syscheck.path": [
+          "/etc/passwd"
+        ]
+      },
+      "fim_changes": [
+        {
+          "time": "2026-11-14T16:17:16.721Z",
+          "path": "/etc/passwd",
+          "event": "modified",
+          "size_before": 1838,
+          "size_after": 1844,
+          "size_direction": "increased",
+          "changed_attributes": "size,inode,mtime,md5,sha1,sha256"
+        },
+        {
+          "time": "2026-11-14T16:17:31.967Z",
+          "path": "/etc/passwd",
+          "event": "modified",
+          "size_before": 1844,
+          "size_after": 1832,
+          "size_direction": "decreased",
+          "changed_attributes": "size,inode,mtime,md5,sha1,sha256"
+        }
+      ],
+      "related_alerts": [
+        {
+          "rule_id": "100014",
+          "description": "Possible Data Exfiltration: file transfer tool executed with sudo.",
+          "agent": "ubuntu-victim",
+          "src_ip": "-",
+          "offset_seconds": 524
+        }
+      ]
+    },
+    "suggestion": {
+      "verdict": "true_positive",
+      "severity": "critical",
+      "confidence": 0.95,
+      "summary": "Critical file integrity violations detected on /etc/passwd with a concurrent data exfiltration alert, indicating active compromise.",
+      "evidence": [
+        "/etc/passwd changed on endpoint",
+        "event: modified, size_before: 1838, size_after: 1844",
+        "event: modified, size_before: 1844, size_after: 1832",
+        "Possible Data Exfiltration: file transfer tool executed with sudo"
+      ],
+      "recommended_actions": [
+        "Isolate host ubuntu-victim immediately to prevent further lateral movement or data loss.",
+        "Investigate the process executing the file transfer tool and the rootkit/backdoor associated with T1098.",
+        "Review all user accounts in /etc/passwd for unauthorized additions or modifications."
+      ],
+      "attempts": 1,
+      "schema_errors": [],
+      "model_verdict": "true_positive",
+      "model_severity": "high",
+      "guardrail_notes": [
+        "severity raised from high to critical (floor for Wazuh level 12)"
+      ],
+      "checks": [],
+      "run_verdicts": [
+        "true_positive",
+        "true_positive",
+        "true_positive"
+      ]
+    },
+    "analyst": {
+      "decision": "pending_review",
+      "final_verdict": null,
+      "note": ""
+    },
+    "llm_seconds": 121.9
+  },
+  {
+    "case": {
+      "case_id": "CASE-011",
+      "times_are": "UTC",
+      "rule_id": "100014",
+      "rule_description": "Possible Data Exfiltration: file transfer tool executed with sudo.",
+      "rule_note": "Matches the NAME of a transfer tool (scp, curl, nc, rsync...) in a sudo command, not whether data is really sent. Judge from the full command in details.data.command.",
+      "wazuh_level": 10,
+      "mitre": [
+        "T1048"
+      ],
+      "agent": "ubuntu-victim",
+      "target_context": "Linux server, agent 001",
+      "src_ip": "-",
+      "src_ip_context": "not applicable (local event, no network source in this alert)",
+      "rule_alerts_in_case": 2,
+      "first_seen": "2026-11-14T16:26:00.726Z",
+      "last_seen": "2026-11-14T16:31:40.830Z",
+      "details": {
+        "data.srcuser": [
+          "victim"
+        ],
+        "data.dstuser": [
+          "root"
+        ],
+        "data.command": [
+          "/usr/bin/curl --version",
+          "/usr/bin/sync"
+        ]
+      },
+      "sample_logs": [
+        "Nov 14 16:25:59 ubuntu-victim sudo[5315]: victim : TTY=/dev/pts/0 ; PWD=/home/victim ; USER=root ; COMMAND=/usr/bin/sync",
+        "Nov 14 16:31:40 ubuntu-victim sudo[5380]: victim : TTY=/dev/pts/0 ; PWD=/home/victim ; USER=root ; COMMAND=/usr/bin/curl --version"
+      ],
+      "related_alerts": [
+        {
+          "rule_id": "100016",
+          "description": "Critical file modified: /etc/passwd changed on endpoint.",
+          "agent": "ubuntu-victim",
+          "src_ip": "-",
+          "offset_seconds": -524
+        }
+      ]
+    },
+    "suggestion": {
+      "verdict": "needs_review",
+      "severity": "high",
+      "confidence": 0.9,
+      "summary": "The rule correctly detected suspicious sudo usage of a data transfer tool (curl) by the victim user, which is corroborated by a related alert indicating critical file modification (/etc/passwd).",
+      "evidence": [
+        "details.data.command: /usr/bin/curl --version",
+        "sample_logs: COMMAND=/usr/bin/sync",
+        "sample_logs: COMMAND=/usr/bin/curl --version",
+        "related_alerts description: Critical file modified: /etc/passwd changed on endpoint"
+      ],
+      "recommended_actions": [
+        "Isolate the host ubuntu-victim to prevent further lateral movement or data exfiltration.",
+        "Review user 'victim' permissions and audit sudo access logs for unauthorized privilege escalation.",
+        "Investigate the root cause of /etc/passwd modification from the related alert."
+      ],
+      "attempts": 1,
+      "schema_errors": [],
+      "model_verdict": "true_positive",
+      "model_severity": "high",
+      "guardrail_notes": [
+        "runs disagreed ['true_positive', 'true_positive', 'needs_review']; set to needs_review"
+      ],
+      "checks": [],
+      "run_verdicts": [
+        "true_positive",
+        "true_positive",
+        "needs_review"
+      ]
+    },
+    "analyst": {
+      "decision": "pending_review",
+      "final_verdict": null,
+      "note": ""
+    },
+    "llm_seconds": 139.8
+  }
+]

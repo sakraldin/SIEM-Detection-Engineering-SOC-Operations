@@ -1,0 +1,9 @@
+<!-- Appended to /var/ossec/etc/ossec.conf on wazuh-server (Week 4, playbook PB-01) -->
+<ossec_config>
+  <active-response>
+    <command>firewall-drop</command>
+    <location>local</location>
+    <rules_id>100010</rules_id>
+    <timeout>600</timeout>
+  </active-response>
+</ossec_config>

@@ -1,0 +1,88 @@
+<!-- Local rules -->
+
+<!-- Modify it at your will. -->
+<!-- Copyright (C) 2015, Wazuh Inc. -->
+
+<!-- Example -->
+<group name="local,syslog,sshd,">
+
+  <!--
+  Dec 10 01:02:02 host sshd[1234]: Failed none for root from 1.1.1.1 port 1066 ssh2
+  -->
+  <rule id="100001" level="5">
+    <if_sid>5716</if_sid>
+    <srcip>1.1.1.1</srcip>
+    <description>sshd: authentication failed from IP 1.1.1.1.</description>
+    <group>authentication_failed,pci_dss_10.2.4,pci_dss_10.2.5,</group>
+  </rule>
+
+  <rule id="100010" level="10" frequency="6" timeframe="120" ignore="120">
+    <if_matched_sid>5760</if_matched_sid>
+    <same_source_ip />
+    <description>Custom SSH Brute Force: 6 failed password attempts from the same source IP within 120 seconds.</description>
+    <mitre>
+      <id>T1110</id>
+    </mitre>
+    <group>authentication_failures,</group>
+  </rule>
+
+  <rule id="100011" level="7">
+    <if_sid>5715</if_sid>
+    <time>20:00 - 08:00</time>
+    <description>Suspicious Login: Successful SSH authentication outside business hours (20:00-08:00).</description>
+    <mitre>
+      <id>T1078</id>
+    </mitre>
+    <group>suspicious_login,</group>
+  </rule>
+
+  <rule id="100012" level="12" frequency="2" timeframe="300">
+    <if_matched_sid>5715</if_matched_sid>
+    <global_frequency />
+    <same_source_ip />
+    <different_location />
+    <description>Possible Lateral Movement: same source IP successfully authenticated to 2 different hosts within 5 minutes.</description>
+    <mitre>
+      <id>T1021</id>
+    </mitre>
+    <group>lateral_movement,</group>
+  </rule>
+
+  <rule id="100013" level="10">
+    <if_sid>5902</if_sid>
+    <description>Possible Persistence: new user account created on endpoint.</description>
+    <mitre>
+      <id>T1136.001</id>
+    </mitre>
+    <group>persistence,</group>
+  </rule>
+  <rule id="100014" level="10">
+    <if_sid>5402</if_sid>
+    <regex type="pcre2">COMMAND=\S*/(scp|rsync|sftp|curl|wget|ncat|nc)(\s|$)</regex>
+    <description>Possible Data Exfiltration: file transfer tool executed with sudo.</description>
+    <mitre>
+      <id>T1048</id>
+    </mitre>
+    <group>exfiltration,</group>
+  </rule>
+  <rule id="100015" level="10">
+    <if_sid>5402</if_sid>
+    <regex type="pcre2">COMMAND=\S*/(su|bash|sh|zsh|dash)(\s|$)</regex>
+    <description>Possible Privilege Escalation: root shell opened via sudo.</description>
+    <mitre>
+      <id>T1548.003</id>
+    </mitre>
+    <group>privilege_escalation,</group>
+  </rule>
+
+  <rule id="100016" level="12">
+    <if_sid>550</if_sid>
+    <field name="file">^/etc/passwd$|^/etc/shadow$</field>
+    <description>Critical file modified: $(file) changed on endpoint.</description>
+    <mitre>
+      <id>T1098</id>
+    </mitre>
+    <group>fim,persistence,</group>
+  </rule>
+
+</group>

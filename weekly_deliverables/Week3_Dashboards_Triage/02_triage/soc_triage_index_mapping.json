@@ -1,0 +1,19 @@
+PUT soc-triage
+{
+  "mappings": {
+    "properties": {
+      "alert_rule_id":  { "type": "keyword" },
+      "alert_name":     { "type": "keyword" },
+      "severity":       { "type": "keyword" },
+      "src_ip":         { "type": "ip" },
+      "target":         { "type": "keyword" },
+      "mitre":          { "type": "keyword" },
+      "attack_started": { "type": "date" },
+      "detected_at":    { "type": "date" },
+      "closed_at":      { "type": "date" },
+      "status":         { "type": "keyword" },
+      "verdict":        { "type": "keyword" },
+      "analyst":        { "type": "keyword" }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+<!-- File: /var/ossec/etc/ossec.conf on ubuntu-victim (line 114) -->
+
+<!-- Original line (default) -->
+<!-- <directories>/etc,/usr/bin,/usr/sbin</directories> -->
+
+<!-- Changed line (realtime FIM, needed by rule 100016) -->
+<directories check_all="yes" realtime="yes">/etc,/usr/bin,/usr/sbin</directories>
+
+<!-- Command used to change it (backup first):
+     sudo cp /var/ossec/etc/ossec.conf /var/ossec/etc/ossec.conf.bak
+     sudo sed -i '114s|<directories>|<directories check_all="yes" realtime="yes">|' /var/ossec/etc/ossec.conf
+     sudo systemctl restart wazuh-agent
+-->

@@ -1,0 +1,5 @@
+<!-- Original line (default) -->
+<!-- <directories>/etc,/usr/bin,/usr/sbin</directories> -->
+
+<!-- Changed line (realtime FIM, needed by rule 100016) -->
+<directories check_all="yes" realtime="yes">/etc,/usr/bin,/usr/sbin</directories>
